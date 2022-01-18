@@ -1,0 +1,52 @@
+version: "3.8"
+    
+services:
+  traefik:
+    image: traefik:latest
+    container_name: "traefik"
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=nt-traefik
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.rule=Host(`traefik.helha.lan`)
+      - traefik.http.services.traefik.loadbalancer.server.port=8080
+    ports:
+      - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - nt-traefik
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce
+    container_name: "portainer"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=nt-traefik
+      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.routers.portainer.rule=Host(`portainer.helha.lan`)
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - dataportainer:/data
+    networks:
+      - nt-traefik
+    restart: unless-stopped
+
+
+volumes:
+  db_data: {}
+  wordpress_data: {}
+  dataportainer:
+
+networks:
+  nt-traefik:
+    external: true
