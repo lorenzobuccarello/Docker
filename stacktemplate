@@ -14,7 +14,7 @@ services:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: wordpress
     
-  wordpress:
+  wordpressx:
     depends_on:
       - dbx
     image: wordpress:latest
