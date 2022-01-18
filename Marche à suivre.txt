@@ -1,0 +1,7 @@
+Lancer traefik-portainer docker-compose up -d
+créer une stack template, depuis portainer avec les sources web
+Ajouter les noms d'hotes dans /etc/hosts pour que les noms traefik
+soient résolus
+Personnaliser par container, changer les noms en conséquences,
+noms de service, noms des volumes haut bas, nom db, noms 
+routers label, host (/etc/hosts)
