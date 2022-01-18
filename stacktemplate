@@ -1,0 +1,43 @@
+version: "3.8"
+    
+services:
+  dbx:
+    image: mysql:5.7
+    volumes:
+      - dbx_data:/var/lib/mysql
+    restart: always
+    networks: 
+      - nt-traefik
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpressx
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    
+  wordpress:
+    depends_on:
+      - dbx
+    image: wordpress:latest
+    volumes:
+      - wordpressx_data:/var/www/html
+    restart: always
+    networks: 
+      - nt-traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=nt-traefik
+      - traefik.http.routers.wordpressx.entrypoints=web
+      - traefik.http.routers.wordpressx.rule=Host(`sitex.helha.lan`)
+      - traefik.http.services.wordpressx.loadbalancer.server.port=80
+    environment:
+      WORDPRESS_DB_HOST: dbx
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpressx
+volumes:
+  dbx_data: {}
+  wordpressx_data: {}
+
+networks:
+  nt-traefik:
+    external: true
